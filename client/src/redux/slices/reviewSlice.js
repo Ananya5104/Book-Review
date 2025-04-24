@@ -114,7 +114,7 @@ export const reviewSlice = createSlice({
       })
       .addCase(getBookReviews.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.isSuccess = true;
+        // Don't set isSuccess to true for fetching reviews
         state.reviews = action.payload;
       })
       .addCase(getBookReviews.rejected, (state, action) => {

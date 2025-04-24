@@ -26,6 +26,11 @@ function ReviewForm({ bookId, reviewToEdit, setReviewToEdit }) {
     (state) => state.reviews
   );
 
+  // Reset review state when component mounts
+  useEffect(() => {
+    dispatch(reset());
+  }, [dispatch]);
+
   useEffect(() => {
     if (reviewToEdit) {
       setFormData({
@@ -47,9 +52,12 @@ function ReviewForm({ bookId, reviewToEdit, setReviewToEdit }) {
     }
   }, [refinedReview]);
 
+  // Track if a form submission has been made
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+
   useEffect(() => {
-    if (isSuccess) {
-      // Show success toast notification
+    if (isSuccess && hasSubmitted) {
+      // Show success toast notification only if a form was submitted
       if (reviewToEdit) {
         showSuccessToast('Review updated successfully!');
       } else {
@@ -66,8 +74,11 @@ function ReviewForm({ bookId, reviewToEdit, setReviewToEdit }) {
       setShowRefined(false);
       setReviewToEdit && setReviewToEdit(null);
       dispatch(reset());
+
+      // Reset submission state
+      setHasSubmitted(false);
     }
-  }, [isSuccess, dispatch, setReviewToEdit, reviewToEdit]);
+  }, [isSuccess, hasSubmitted, dispatch, setReviewToEdit, reviewToEdit]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -82,6 +93,7 @@ function ReviewForm({ bookId, reviewToEdit, setReviewToEdit }) {
 
     if (!formData.title || !formData.comment) {
       setMessage('Please fill in all fields');
+      showErrorToast('Please fill in all fields');
       return;
     }
 
@@ -92,6 +104,9 @@ function ReviewForm({ bookId, reviewToEdit, setReviewToEdit }) {
       refinedComment: formData.refinedComment,
       bookId,
     };
+
+    // Set submission flag to true
+    setHasSubmitted(true);
 
     if (reviewToEdit) {
       dispatch(updateReview({ id: reviewToEdit._id, reviewData }));
@@ -130,6 +145,8 @@ function ReviewForm({ bookId, reviewToEdit, setReviewToEdit }) {
   };
 
   const handleUseRefined = () => {
+    // Set submission flag to true before submitting
+    setHasSubmitted(true);
     handleSubmit({ preventDefault: () => {} });
   };
 

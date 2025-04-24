@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getBookReviews } from '../../redux/slices/reviewSlice';
+import { getBookReviews, reset } from '../../redux/slices/reviewSlice';
 import ReviewItem from './ReviewItem';
 import Spinner from '../ui/Spinner';
 import Alert from '../ui/Alert';
@@ -12,7 +12,15 @@ function ReviewList({ bookId, onDelete, onEdit }) {
   );
 
   useEffect(() => {
+    // Reset the review state to clear any previous success/error states
+    dispatch(reset());
+    // Then fetch the reviews
     dispatch(getBookReviews(bookId));
+
+    // Clean up when component unmounts
+    return () => {
+      dispatch(reset());
+    };
   }, [dispatch, bookId]);
 
   if (isLoading) {
