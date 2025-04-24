@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api/reviews';
+const API_URL = 'https://book-review-3eod.onrender.com/api/reviews';
 
 // Get reviews for a book
 const getBookReviews = async (bookId) => {
