@@ -38,6 +38,12 @@ app.use((err, req, res, next) => {
   });
 });
 
+// cors
+app.use(cors({
+  origin: 'https://book-review-frontend-x0zl.onrender.com',
+  credentials: true, 
+}));
+
 // Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
