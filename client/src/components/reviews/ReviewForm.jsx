@@ -7,6 +7,7 @@ import {
   clearRefinedReview,
   reset,
 } from '../../redux/slices/reviewSlice';
+import { showSuccessToast, showErrorToast, showInfoToast } from '../../utils/toastUtils';
 import Alert from '../ui/Alert';
 import Spinner from '../ui/Spinner';
 
@@ -48,6 +49,14 @@ function ReviewForm({ bookId, reviewToEdit, setReviewToEdit }) {
 
   useEffect(() => {
     if (isSuccess) {
+      // Show success toast notification
+      if (reviewToEdit) {
+        showSuccessToast('Review updated successfully!');
+      } else {
+        showSuccessToast('Review submitted successfully!');
+      }
+
+      // Reset form
       setFormData({
         title: '',
         rating: 5,
@@ -58,7 +67,7 @@ function ReviewForm({ bookId, reviewToEdit, setReviewToEdit }) {
       setReviewToEdit && setReviewToEdit(null);
       dispatch(reset());
     }
-  }, [isSuccess, dispatch, setReviewToEdit]);
+  }, [isSuccess, dispatch, setReviewToEdit, reviewToEdit]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -94,9 +103,11 @@ function ReviewForm({ bookId, reviewToEdit, setReviewToEdit }) {
   const handleRefine = () => {
     if (!formData.comment) {
       setMessage('Please write a review first');
+      showErrorToast('Please write a review first');
       return;
     }
 
+    showInfoToast('Refining your review with AI...');
     dispatch(refineReviewWithAI(formData.comment));
   };
 
@@ -125,10 +136,10 @@ function ReviewForm({ bookId, reviewToEdit, setReviewToEdit }) {
   return (
     <div className="review-form-container">
       <h3>{reviewToEdit ? 'Edit Review' : 'Write a Review'}</h3>
-      
+
       {message && <Alert type="danger" message={message} />}
       {isError && <Alert type="danger" message={errorMessage} />}
-      
+
       {isLoading ? (
         <Spinner />
       ) : showRefined ? (
@@ -140,7 +151,7 @@ function ReviewForm({ bookId, reviewToEdit, setReviewToEdit }) {
               Use Original
             </button>
           </div>
-          
+
           <div className="review-refined">
             <h4>AI-Refined Review</h4>
             <p>{formData.refinedComment}</p>
@@ -148,7 +159,7 @@ function ReviewForm({ bookId, reviewToEdit, setReviewToEdit }) {
               Use Refined
             </button>
           </div>
-          
+
           <button className="btn-secondary" onClick={handleCancelRefine}>
             Cancel
           </button>
@@ -166,7 +177,7 @@ function ReviewForm({ bookId, reviewToEdit, setReviewToEdit }) {
               placeholder="Give your review a title"
             />
           </div>
-          
+
           <div className="form-group">
             <label htmlFor="rating">Rating</label>
             <select
@@ -182,7 +193,7 @@ function ReviewForm({ bookId, reviewToEdit, setReviewToEdit }) {
               <option value="1">1 - Poor</option>
             </select>
           </div>
-          
+
           <div className="form-group">
             <label htmlFor="comment">Review</label>
             <textarea
@@ -194,12 +205,12 @@ function ReviewForm({ bookId, reviewToEdit, setReviewToEdit }) {
               rows="5"
             ></textarea>
           </div>
-          
+
           <div className="form-actions">
             <button type="submit" className="btn-primary">
               {reviewToEdit ? 'Update Review' : 'Submit Review'}
             </button>
-            
+
             <button
               type="button"
               className="btn-secondary"
@@ -207,7 +218,7 @@ function ReviewForm({ bookId, reviewToEdit, setReviewToEdit }) {
             >
               Refine with AI
             </button>
-            
+
             {reviewToEdit && (
               <button
                 type="button"

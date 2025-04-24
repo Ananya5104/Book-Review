@@ -4,6 +4,7 @@ import { getBooks, deleteBook, reset } from '../../redux/slices/bookSlice';
 import Spinner from '../ui/Spinner';
 import Alert from '../ui/Alert';
 import { formatDate } from '../../utils/formatDate';
+import { showSuccessToast, showErrorToast } from '../../utils/toastUtils';
 
 function BookTable({ onEdit }) {
   const dispatch = useDispatch();
@@ -26,9 +27,23 @@ function BookTable({ onEdit }) {
     }
   }, [isSuccess, dispatch]);
 
+  // Show toast notification when error occurs
+  useEffect(() => {
+    if (isError) {
+      showErrorToast(message || 'An error occurred');
+    }
+  }, [isError, message]);
+
   const handleDelete = (id) => {
     if (window.confirm('Are you sure you want to delete this book?')) {
-      dispatch(deleteBook(id));
+      dispatch(deleteBook(id))
+        .unwrap()
+        .then(() => {
+          showSuccessToast('Book deleted successfully!');
+        })
+        .catch((error) => {
+          showErrorToast(error || 'Failed to delete book');
+        });
     }
   };
 

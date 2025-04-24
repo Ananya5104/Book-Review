@@ -4,6 +4,7 @@ import { createBook, updateBook, reset } from '../../redux/slices/bookSlice';
 import Alert from '../ui/Alert';
 import Spinner from '../ui/Spinner';
 import { handleImageError } from '../../utils/imageUtils';
+import { showSuccessToast, showErrorToast } from '../../utils/toastUtils';
 
 function BookForm({ bookToEdit, setBookToEdit }) {
   const [formData, setFormData] = useState({
@@ -56,6 +57,13 @@ function BookForm({ bookToEdit, setBookToEdit }) {
   useEffect(() => {
     // Only reset the form if we've just completed a successful operation
     if (isSuccess) {
+      // Show success toast notification
+      if (bookToEdit) {
+        showSuccessToast('Book updated successfully!');
+      } else {
+        showSuccessToast('Book added successfully!');
+      }
+
       // Reset the form
       setFormData({
         title: '',
@@ -77,7 +85,7 @@ function BookForm({ bookToEdit, setBookToEdit }) {
       // Reset the Redux state
       dispatch(reset());
     }
-  }, [isSuccess, dispatch, setBookToEdit]);
+  }, [isSuccess, dispatch, setBookToEdit, bookToEdit]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -89,6 +97,14 @@ function BookForm({ bookToEdit, setBookToEdit }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Basic form validation
+    if (!formData.title || !formData.author || !formData.description ||
+        !formData.genre || !formData.publicationYear || !formData.isbn ||
+        !formData.publisher) {
+      showErrorToast('Please fill in all required fields');
+      return;
+    }
 
     if (bookToEdit) {
       dispatch(updateBook({ id: bookToEdit._id, bookData: formData }));

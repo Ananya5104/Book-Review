@@ -4,63 +4,69 @@ import { useDispatch, useSelector } from 'react-redux';
 import { login, reset } from '../redux/slices/authSlice';
 import Spinner from '../components/ui/Spinner';
 import Alert from '../components/ui/Alert';
+import { showSuccessToast, showErrorToast } from '../utils/toastUtils';
 
 function LoginPage() {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
-  
+
   const { email, password } = formData;
-  
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  
+
   const { user, isLoading, isError, isSuccess, message } = useSelector(
     (state) => state.auth
   );
-  
+
   useEffect(() => {
     if (isSuccess || user) {
+      showSuccessToast('Login successful!');
       navigate('/');
     }
-    
+
+    if (isError) {
+      showErrorToast(message || 'Login failed');
+    }
+
     return () => {
       dispatch(reset());
     };
-  }, [user, isSuccess, navigate, dispatch]);
-  
+  }, [user, isSuccess, isError, message, navigate, dispatch]);
+
   const handleChange = (e) => {
     setFormData((prevState) => ({
       ...prevState,
       [e.target.name]: e.target.value,
     }));
   };
-  
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     const userData = {
       email,
       password,
     };
-    
+
     dispatch(login(userData));
   };
-  
+
   if (isLoading) {
     return <Spinner />;
   }
-  
+
   return (
     <div className="auth-page">
       <div className="container">
         <div className="auth-form-container">
           <h1>Login</h1>
           <p>Sign in to your account</p>
-          
+
           {isError && <Alert type="danger" message={message} />}
-          
+
           <form onSubmit={handleSubmit}>
             <div className="form-group">
               <label htmlFor="email">Email</label>
@@ -74,7 +80,7 @@ function LoginPage() {
                 required
               />
             </div>
-            
+
             <div className="form-group">
               <label htmlFor="password">Password</label>
               <input
@@ -87,12 +93,12 @@ function LoginPage() {
                 required
               />
             </div>
-            
+
             <button type="submit" className="btn-primary btn-block">
               Login
             </button>
           </form>
-          
+
           <div className="auth-links">
             <p>
               Don't have an account? <Link to="/register">Register</Link>

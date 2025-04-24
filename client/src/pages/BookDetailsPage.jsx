@@ -10,6 +10,7 @@ import Spinner from '../components/ui/Spinner';
 import Alert from '../components/ui/Alert';
 import { formatDate } from '../utils/formatDate';
 import { handleImageError, getValidImageUrl } from '../utils/imageUtils';
+import { showSuccessToast, showErrorToast } from '../utils/toastUtils';
 
 function BookDetailsPage() {
   const [reviewToEdit, setReviewToEdit] = useState(null);
@@ -33,7 +34,16 @@ function BookDetailsPage() {
 
   const handleDeleteReview = (reviewId) => {
     if (window.confirm('Are you sure you want to delete this review?')) {
-      dispatch(deleteReview(reviewId));
+      dispatch(deleteReview(reviewId))
+        .unwrap()
+        .then(() => {
+          showSuccessToast('Review deleted successfully!');
+          // Refresh book details to update rating
+          dispatch(getBookDetails(id));
+        })
+        .catch((error) => {
+          showErrorToast(error || 'Failed to delete review');
+        });
     }
   };
 
