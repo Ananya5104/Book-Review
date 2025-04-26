@@ -109,7 +109,7 @@ book-review-platform/
 1. Navigate to the backend directory and install dependencies:
 
    ```bash
-   cd backend
+   cd server
    npm install
 
 2. Create a .env file and add the following:
@@ -119,13 +119,12 @@ book-review-platform/
 3. Run the backend:
 
    ```bash
-   cd backend
    npm install
 
 
 4. Navigate to the frontend directory and install dependencies:
       ```bash
-   cd frontend
+   cd client
    npm install
 
 5. Run Frontend:
