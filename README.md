@@ -145,3 +145,7 @@ book-review-platform/
 - User following and reading lists
 - Notifications system
 - Book recommendation engine
+
+## Admin Credentials:
+Email: ksaiananya5104@gmail.com 
+Password: Saiananya5!
